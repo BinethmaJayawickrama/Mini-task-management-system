@@ -5,78 +5,20 @@
 // ============================================================
 
 session_start();
+require_once 'includes/functions.php'; // loads db.php + helper functions
 
-// Retrieve and clear session flash messages (set by backend actions)
+// ── Retrieve and clear session flash messages ──
 $success = $_SESSION['success'] ?? null;
 $errors  = $_SESSION['errors']  ?? [];
 unset($_SESSION['success'], $_SESSION['errors']);
 
-// ── Temporary static tasks for frontend preview ──
-// (Replace with DB fetch once backend is wired up)
-$tasks = [
-    [
-        'id'          => 1,
-        'title'       => 'Design the dashboard UI',
-        'description' => 'Create a responsive layout using HTML, CSS.',
-        'priority'    => 'High',
-        'status'      => 'Completed',
-        'created_at'  => '2026-07-13 08:00:00',
-    ],
-    [
-        'id'          => 2,
-        'title'       => 'Set up database connection',
-        'description' => 'Configure MySQLi connection in db.php.',
-        'priority'    => 'High',
-        'status'      => 'Pending',
-        'created_at'  => '2026-07-13 09:00:00',
-    ],
-    [
-        'id'          => 3,
-        'title'       => 'Implement add task feature',
-        'description' => 'Build form and PHP backend to insert tasks.',
-        'priority'    => 'Medium',
-        'status'      => 'Pending',
-        'created_at'  => '2026-07-13 09:30:00',
-    ],
-    [
-        'id'          => 4,
-        'title'       => 'Write README documentation',
-        'description' => 'Add setup instructions and project overview.',
-        'priority'    => 'Low',
-        'status'      => 'Pending',
-        'created_at'  => '2026-07-13 10:00:00',
-    ],
-];
+// ── Fetch all tasks from the database (latest first) ──
+$tasks = getAllTasks($conn);
 
-// Stats counters
+// ── Stats counters ──
 $totalTasks     = count($tasks);
 $pendingTasks   = count(array_filter($tasks, fn($t) => $t['status'] === 'Pending'));
 $completedTasks = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'));
-
-// ── Helper: badge CSS class by priority ──
-function priorityBadge(string $p): string {
-    return match($p) {
-        'High'   => 'badge-high',
-        'Medium' => 'badge-medium',
-        'Low'    => 'badge-low',
-        default  => ''
-    };
-}
-
-// ── Helper: badge CSS class by status ──
-function statusBadge(string $s): string {
-    return $s === 'Completed' ? 'badge-completed' : 'badge-pending';
-}
-
-// ── Helper: priority dot class ──
-function priorityDot(string $p): string {
-    return match($p) {
-        'High'   => 'dot-high',
-        'Medium' => 'dot-medium',
-        'Low'    => 'dot-low',
-        default  => ''
-    };
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
