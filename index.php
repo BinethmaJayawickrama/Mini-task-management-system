@@ -30,8 +30,10 @@ $completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'))
 <body>
 
 <header class="site-header">
-    <h1>📋 Task Manager</h1>
-    <button id="themeToggle" class="btn btn-gray" style="padding: 6px 14px; font-size: 0.8rem; width: auto; height: auto;">🌙</button>
+    <h1><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Task Manager</h1>
+    <button id="themeToggle" class="btn btn-gray" style="padding: 8px 12px; display: inline-flex; align-items: center; justify-content: center; width: auto; height: auto;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
 </header>
 
 <main class="container">
@@ -108,12 +110,14 @@ $completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'))
         <!-- Task List -->
         <section class="card">
             <div class="card-head">
-                <h2>📂 All Tasks</h2>
+                <h2>All Tasks</h2>
                 <span style="font-size:0.75rem; color:#9ca3af;"><?= $total ?> task<?= $total !== 1 ? 's' : '' ?></span>
             </div>
             <div class="card-body" style="padding-bottom: 8px;">
                 <div class="search-box">
-                    <span class="icon">🔍</span>
+                    <span class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
                     <input type="search" id="searchInput" class="form-control" placeholder="Search by title..." autocomplete="off">
                 </div>
             </div>
