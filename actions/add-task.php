@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-// add-task.php — Insert a New Task into the Database
-// Mini Task Management System
-// ============================================================
-
 session_start();
 require_once '../includes/db.php';
 

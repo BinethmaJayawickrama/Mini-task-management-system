@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-// delete-task.php — Delete a Task from the Database
-// Mini Task Management System
-// ============================================================
-
 session_start();
 require_once '../includes/db.php';
 

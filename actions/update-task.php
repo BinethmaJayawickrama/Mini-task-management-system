@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-// update-task.php — Toggle Task Status (Pending ↔ Completed)
-// Mini Task Management System
-// ============================================================
-
 session_start();
 require_once '../includes/db.php';
 

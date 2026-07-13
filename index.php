@@ -20,13 +20,18 @@ $completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'))
     <title>Task Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=<?= time() ?>">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
 </head>
 <body>
 
 <header class="site-header">
     <h1>📋 Task Manager</h1>
-    <span class="header-count"><?= $total ?> Task<?= $total !== 1 ? 's' : '' ?></span>
+    <button id="themeToggle" class="btn btn-gray" style="padding: 6px 14px; font-size: 0.8rem; width: auto; height: auto;">🌙</button>
 </header>
 
 <main class="container">
@@ -66,27 +71,27 @@ $completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'))
         <!-- Add Task Form -->
         <section class="card">
             <div class="card-head">
-                <h2>➕ Add New Task</h2>
+                <h2>Add New Task</h2>
             </div>
             <div class="card-body">
                 <form id="taskForm" action="actions/add-task.php" method="POST" novalidate>
 
                     <div class="form-group">
-                        <label for="title">Task Title *</label>
+                        <label for="title">Task Title</label>
                         <input type="text" id="title" name="title" class="form-control" placeholder="e.g. Fix login bug" maxlength="255" autocomplete="off">
                         <span class="error-msg" id="titleError"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="description">Description *</label>
+                        <label for="description">Description</label>
                         <textarea id="description" name="description" class="form-control" placeholder="What needs to be done?" rows="4"></textarea>
                         <span class="error-msg" id="descError"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="priority">Priority *</label>
+                        <label for="priority">Priority</label>
                         <select id="priority" name="priority" class="form-control">
-                            <option value="">-- Select --</option>
+                            <option value="">Select</option>
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
@@ -201,7 +206,7 @@ $completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'))
 <div class="modal-overlay" id="editModal">
     <div class="modal">
         <div class="modal-head">
-            <h3>✏️ Edit Task</h3>
+            <h3>Edit Task</h3>
             <button class="modal-close" id="modalClose">✕</button>
         </div>
         <form action="actions/edit-task.php" method="POST" id="editForm">
@@ -209,21 +214,21 @@ $completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'))
                 <input type="hidden" name="id" id="editId">
 
                 <div class="form-group">
-                    <label for="editTitle">Task Title *</label>
+                    <label for="editTitle">Task Title</label>
                     <input type="text" id="editTitle" name="title" class="form-control" maxlength="255">
                     <span class="error-msg" id="editTitleError"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="editDescription">Description *</label>
+                    <label for="editDescription">Description</label>
                     <textarea id="editDescription" name="description" class="form-control" rows="3"></textarea>
                     <span class="error-msg" id="editDescError"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="editPriority">Priority *</label>
+                    <label for="editPriority">Priority</label>
                     <select id="editPriority" name="priority" class="form-control">
-                        <option value="">-- Select --</option>
+                        <option value="">Select</option>
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
@@ -239,6 +244,6 @@ $completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'))
     </div>
 </div>
 
-<script src="js/app.js"></script>
+<script src="js/app.js?v=<?= time() ?>"></script>
 </body>
 </html>
