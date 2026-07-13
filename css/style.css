@@ -1,0 +1,577 @@
+/* ============================================================
+   style.css — Mini Task Management System
+   Author: Binethma Jayawickrama
+   ============================================================ */
+
+/* ── 1. Google Font Import ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── 2. CSS Variables (Design Tokens) ── */
+:root {
+    --primary:        #6366f1;   /* Indigo */
+    --primary-dark:   #4338ca;
+    --primary-light:  #e0e7ff;
+    --success:        #10b981;
+    --success-light:  #d1fae5;
+    --danger:         #ef4444;
+    --danger-light:   #fee2e2;
+    --warning:        #f59e0b;
+    --warning-light:  #fef3c7;
+
+    --bg:             #f8fafc;
+    --card-bg:        #ffffff;
+    --border:         #e2e8f0;
+    --text:           #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #94a3b8;
+
+    --radius-sm:  6px;
+    --radius:     12px;
+    --radius-lg:  18px;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
+    --shadow:     0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg:  0 8px 32px rgba(99,102,241,0.18);
+    --transition: 0.22s ease;
+}
+
+/* ── 3. Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* ── 4. Header ── */
+.site-header {
+    background: linear-gradient(135deg, #6366f1 0%, #4338ca 60%, #312e81 100%);
+    color: #fff;
+    padding: 0 2rem;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 16px rgba(67,56,202,0.35);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.header-brand .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.header-brand h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.header-badge {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* ── 5. Layout ── */
+.container {
+    max-width: 1080px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 1.75rem;
+    align-items: start;
+}
+
+/* ── 6. Cards ── */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow var(--transition);
+}
+
+.card:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.11); }
+
+.card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to right, #fafaff, #fff);
+}
+
+.card-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-body { padding: 1.5rem; }
+
+/* ── 7. Stats Bar ── */
+.stats-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+.stat-card {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.stat-card .stat-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+
+.stat-card .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-card.stat-total   .stat-value { color: var(--primary); }
+.stat-card.stat-pending .stat-value { color: var(--warning); }
+.stat-card.stat-done    .stat-value { color: var(--success); }
+
+/* ── 8. Form Elements ── */
+.form-group { margin-bottom: 1.1rem; }
+
+.form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.65rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+    appearance: none;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+}
+
+textarea.form-control { resize: vertical; min-height: 90px; }
+
+.invalid-feedback {
+    display: none;
+    font-size: 0.78rem;
+    color: var(--danger);
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+
+/* ── 9. Buttons ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 10px rgba(99,102,241,0.3);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+.btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-sm {
+    padding: 0.32rem 0.75rem;
+    font-size: 0.78rem;
+    border-radius: 6px;
+}
+
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(16,185,129,0.3);
+}
+
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(239,68,68,0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+}
+
+.btn-outline:hover {
+    background: var(--bg);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ── 10. Badges ── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.22rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.badge-high    { background: #fee2e2; color: #b91c1c; }
+.badge-medium  { background: #fef3c7; color: #92400e; }
+.badge-low     { background: #dcfce7; color: #166534; }
+.badge-pending   { background: #e0e7ff; color: #3730a3; }
+.badge-completed { background: #d1fae5; color: #065f46; }
+
+/* ── 11. Search Bar ── */
+.search-wrapper {
+    position: relative;
+}
+
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.search-wrapper .form-control {
+    padding-left: 2.5rem;
+    border-radius: 999px;
+    background: var(--bg);
+}
+
+/* ── 12. Task Table ── */
+.task-table-wrapper { overflow-x: auto; }
+
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.task-table thead th {
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+}
+
+.task-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+    animation: fadeInRow 0.3s ease;
+}
+
+.task-table tbody tr:hover { background: #f8f8ff; }
+.task-table tbody tr:last-child { border-bottom: none; }
+
+.task-table td {
+    padding: 0.9rem 1rem;
+    vertical-align: middle;
+}
+
+.task-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+}
+
+.task-desc {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+}
+
+/* ── 13. Empty State ── */
+.empty-state {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: var(--text-muted);
+}
+
+.empty-state .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.empty-state p {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.empty-state small {
+    display: block;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    color: var(--text-muted);
+}
+
+/* ── 14. Alert / Flash Messages ── */
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 1.25rem;
+    animation: slideDown 0.3s ease;
+}
+
+.alert-success {
+    background: var(--success-light);
+    color: #065f46;
+    border-left: 4px solid var(--success);
+}
+
+.alert-error {
+    background: var(--danger-light);
+    color: #991b1b;
+    border-left: 4px solid var(--danger);
+}
+
+.alert .alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+.alert-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    font-size: 1rem;
+    padding: 0;
+    line-height: 1;
+    transition: opacity var(--transition);
+}
+
+.alert-close:hover { opacity: 1; }
+
+/* ── 15. Loading Spinner ── */
+.spinner {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2.5px solid rgba(255,255,255,0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    flex-shrink: 0;
+}
+
+/* ── 16. Priority dot ── */
+.priority-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+}
+.dot-high   { background: #ef4444; }
+.dot-medium { background: #f59e0b; }
+.dot-low    { background: #10b981; }
+
+/* ── 17. Footer ── */
+.site-footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+}
+
+/* ── 18. Keyframe Animations ── */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInRow {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── 19. Responsive ── */
+@media (max-width: 900px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .site-header { padding: 0 1rem; }
+
+    .stats-bar { flex-wrap: wrap; }
+    .stat-card  { min-width: calc(50% - 0.5rem); }
+
+    /* Stack table as cards on mobile */
+    .task-table thead { display: none; }
+
+    .task-table,
+    .task-table tbody,
+    .task-table tr,
+    .task-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .task-table tr {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 0.9rem;
+        padding: 0.75rem;
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .task-table td {
+        padding: 0.35rem 0.25rem;
+        border: none;
+    }
+
+    .task-table td::before {
+        content: attr(data-label) ': ';
+        font-weight: 700;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        display: inline;
+    }
+
+    .task-desc { max-width: 100%; white-space: normal; }
+    .actions-cell { flex-wrap: wrap; margin-top: 0.5rem; }
+
+    .header-badge { display: none; }
+}
+
+@media (max-width: 400px) {
+    .stat-card { min-width: 100%; }
+    .container { padding: 0 1rem; }
+}
