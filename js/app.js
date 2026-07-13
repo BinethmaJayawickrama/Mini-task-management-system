@@ -1,181 +1,162 @@
-// ============================================================
-// app.js — Mini Task Management System
-// Frontend: Validation · Search · Delete Confirm · Loading
-// ============================================================
-
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* --------------------------------------------------------
-       1. AUTO-DISMISS FLASH ALERTS after 4 seconds
-    -------------------------------------------------------- */
+    // Auto-dismiss alerts
     document.querySelectorAll('.alert').forEach(function (alert) {
-        // Auto-dismiss
-        setTimeout(function () { dismissAlert(alert); }, 4000);
+        setTimeout(function () {
+            alert.style.opacity = '0';
+            alert.style.transition = 'opacity 0.4s';
+            setTimeout(function () { alert.remove(); }, 400);
+        }, 4000);
 
-        // Manual close button
-        const closeBtn = alert.querySelector('.alert-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function () {
-                dismissAlert(alert);
-            });
-        }
+        const btn = alert.querySelector('.alert-close');
+        if (btn) btn.addEventListener('click', function () { alert.remove(); });
     });
 
-    function dismissAlert(alert) {
-        alert.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        alert.style.opacity    = '0';
-        alert.style.transform  = 'translateY(-8px)';
-        setTimeout(function () { alert.remove(); }, 400);
-    }
 
-
-    /* --------------------------------------------------------
-       2. ADD TASK FORM — Frontend Validation
-    -------------------------------------------------------- */
+    // Add task form validation
     const taskForm = document.getElementById('taskForm');
-
     if (taskForm) {
         taskForm.addEventListener('submit', function (e) {
             let valid = true;
 
-            // ── Title ──
-            const titleInput = document.getElementById('title');
-            const titleError = document.getElementById('titleError');
-            const titleVal   = titleInput.value.trim();
-
-            if (titleVal === '') {
-                showError(titleInput, titleError, 'Task title is required.');
-                valid = false;
-            } else if (titleVal.length < 3) {
-                showError(titleInput, titleError, 'Title must be at least 3 characters long.');
-                valid = false;
+            const title = document.getElementById('title');
+            const titleErr = document.getElementById('titleError');
+            if (title.value.trim() === '') {
+                showErr(title, titleErr, 'Title is required.'); valid = false;
+            } else if (title.value.trim().length < 3) {
+                showErr(title, titleErr, 'Title must be at least 3 characters.'); valid = false;
             } else {
-                clearError(titleInput, titleError);
+                clearErr(title, titleErr);
             }
 
-            // ── Description ──
-            const descInput = document.getElementById('description');
-            const descError = document.getElementById('descError');
-
-            if (descInput.value.trim() === '') {
-                showError(descInput, descError, 'Description is required.');
-                valid = false;
+            const desc = document.getElementById('description');
+            const descErr = document.getElementById('descError');
+            if (desc.value.trim() === '') {
+                showErr(desc, descErr, 'Description is required.'); valid = false;
             } else {
-                clearError(descInput, descError);
+                clearErr(desc, descErr);
             }
 
-            // ── Priority ──
-            const priorityInput = document.getElementById('priority');
-            const priorityError = document.getElementById('priorityError');
-
-            if (priorityInput.value === '') {
-                showError(priorityInput, priorityError, 'Please select a priority level.');
-                valid = false;
+            const priority = document.getElementById('priority');
+            const priorityErr = document.getElementById('priorityError');
+            if (priority.value === '') {
+                showErr(priority, priorityErr, 'Please select a priority.'); valid = false;
             } else {
-                clearError(priorityInput, priorityError);
+                clearErr(priority, priorityErr);
             }
 
-            // ── Stop submission if invalid ──
-            if (!valid) {
-                e.preventDefault();
-                // Scroll to first error
-                const firstError = taskForm.querySelector('.is-invalid');
-                if (firstError) {
-                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    firstError.focus();
-                }
-                return;
-            }
+            if (!valid) { e.preventDefault(); return; }
 
-            // ── Show loading state on submit button ──
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerHTML = '<span class="spinner"></span> Adding Task...';
-            submitBtn.disabled  = true;
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<span class="spinner"></span> Adding...';
+            btn.disabled = true;
         });
 
-        // Clear error on input
+        // Clear errors on input
         ['title', 'description', 'priority'].forEach(function (id) {
             const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('input', function () {
-                    clearError(el, document.getElementById(id + 'Error'));
-                });
-            }
+            if (el) el.addEventListener('input', function () {
+                clearErr(el, document.getElementById(id + 'Error'));
+            });
         });
     }
 
 
-    /* --------------------------------------------------------
-       3. REAL-TIME SEARCH — Filter tasks by title (no reload)
-    -------------------------------------------------------- */
+    // Live search
     const searchInput = document.getElementById('searchInput');
-
     if (searchInput) {
         searchInput.addEventListener('input', function () {
-            const query       = this.value.toLowerCase().trim();
-            const rows        = document.querySelectorAll('.task-row');
-            const emptySearch = document.getElementById('emptySearchMsg');
-            let   visible     = 0;
+            const q = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.task-row');
+            let count = 0;
 
             rows.forEach(function (row) {
-                const title = row.getAttribute('data-title').toLowerCase();
-                if (title.includes(query)) {
-                    row.style.display = '';
-                    visible++;
-                } else {
-                    row.style.display = 'none';
-                }
+                const match = row.getAttribute('data-title').toLowerCase().includes(q);
+                row.style.display = match ? '' : 'none';
+                if (match) count++;
             });
 
-            // Show/hide "no results" message
-            if (emptySearch) {
-                emptySearch.style.display = visible === 0 ? 'block' : 'none';
-            }
-
-            // Update visible count label
-            const countLabel = document.getElementById('taskCount');
-            if (countLabel) {
-                countLabel.textContent = query === ''
-                    ? rows.length + ' task' + (rows.length !== 1 ? 's' : '')
-                    : visible + ' result' + (visible !== 1 ? 's' : '');
-            }
+            const empty = document.getElementById('emptySearch');
+            if (empty) empty.style.display = count === 0 ? 'block' : 'none';
         });
     }
 
 
-    /* --------------------------------------------------------
-       4. DELETE CONFIRMATION
-    -------------------------------------------------------- */
+    // Delete confirmation
     document.querySelectorAll('.deleteForm').forEach(function (form) {
         form.addEventListener('submit', function (e) {
-            const title     = form.getAttribute('data-title') || 'this task';
-            const confirmed = confirm(
-                '🗑️  Delete "' + title + '"?\n\nThis action cannot be undone.'
-            );
-            if (!confirmed) {
+            if (!confirm('Delete "' + form.getAttribute('data-title') + '"? This cannot be undone.')) {
                 e.preventDefault();
             }
         });
     });
 
 
-    /* --------------------------------------------------------
-       Helpers
-    -------------------------------------------------------- */
-    function showError(input, errorEl, message) {
-        input.classList.add('is-invalid');
-        if (errorEl) {
-            errorEl.textContent    = message;
-            errorEl.style.display  = 'block';
-        }
+    // Edit modal
+    const modal = document.getElementById('editModal');
+
+    document.querySelectorAll('.editBtn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.getElementById('editId').value          = btn.dataset.id;
+            document.getElementById('editTitle').value       = btn.dataset.title;
+            document.getElementById('editDescription').value = btn.dataset.description;
+            document.getElementById('editPriority').value    = btn.dataset.priority;
+            modal.classList.add('active');
+            document.getElementById('editTitle').focus();
+        });
+    });
+
+    function closeModal() {
+        if (modal) modal.classList.remove('active');
     }
 
-    function clearError(input, errorEl) {
+    document.getElementById('modalClose')?.addEventListener('click', closeModal);
+    document.getElementById('modalCancel')?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    // Edit form validation
+    const editForm = document.getElementById('editForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function (e) {
+            let valid = true;
+
+            const t = document.getElementById('editTitle');
+            const tErr = document.getElementById('editTitleError');
+            if (t.value.trim().length < 3) {
+                showErr(t, tErr, 'Title must be at least 3 characters.'); valid = false;
+            } else { clearErr(t, tErr); }
+
+            const d = document.getElementById('editDescription');
+            const dErr = document.getElementById('editDescError');
+            if (d.value.trim() === '') {
+                showErr(d, dErr, 'Description is required.'); valid = false;
+            } else { clearErr(d, dErr); }
+
+            const p = document.getElementById('editPriority');
+            const pErr = document.getElementById('editPriorityError');
+            if (p.value === '') {
+                showErr(p, pErr, 'Please select a priority.'); valid = false;
+            } else { clearErr(p, pErr); }
+
+            if (!valid) { e.preventDefault(); return; }
+
+            const saveBtn = document.getElementById('editSubmitBtn');
+            saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+            saveBtn.disabled = true;
+        });
+    }
+
+
+    // Helpers
+    function showErr(input, el, msg) {
+        input.classList.add('is-invalid');
+        if (el) { el.textContent = msg; el.style.display = 'block'; }
+    }
+
+    function clearErr(input, el) {
         input.classList.remove('is-invalid');
-        if (errorEl) {
-            errorEl.textContent   = '';
-            errorEl.style.display = 'none';
-        }
+        if (el) { el.textContent = ''; el.style.display = 'none'; }
     }
 
 });

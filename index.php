@@ -1,187 +1,126 @@
 <?php
-// ============================================================
-// index.php — Main Dashboard
-// Mini Task Management System
-// ============================================================
-
 session_start();
-require_once 'includes/functions.php'; // loads db.php + helper functions
+require_once 'includes/functions.php';
 
-// ── Retrieve and clear session flash messages ──
 $success = $_SESSION['success'] ?? null;
 $errors  = $_SESSION['errors']  ?? [];
 unset($_SESSION['success'], $_SESSION['errors']);
 
-// ── Fetch all tasks from the database (latest first) ──
-$tasks = getAllTasks($conn);
-
-// ── Stats counters ──
-$totalTasks     = count($tasks);
-$pendingTasks   = count(array_filter($tasks, fn($t) => $t['status'] === 'Pending'));
-$completedTasks = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'));
+$tasks     = getAllTasks($conn);
+$total     = count($tasks);
+$pending   = count(array_filter($tasks, fn($t) => $t['status'] === 'Pending'));
+$completed = count(array_filter($tasks, fn($t) => $t['status'] === 'Completed'));
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mini Task Management System — Add, track, and manage your tasks easily.">
-    <title>Task Manager — Mini Task Management System</title>
+    <meta name="description" content="Mini Task Management System">
+    <title>Task Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- ============================================================
-     HEADER
-============================================================ -->
 <header class="site-header">
-    <div class="header-brand">
-        <div class="logo-icon">📋</div>
-        <h1>Task Manager</h1>
-    </div>
-    <span class="header-badge" id="headerBadge">
-        <?= $totalTasks ?> Task<?= $totalTasks !== 1 ? 's' : '' ?>
-    </span>
+    <h1>📋 Task Manager</h1>
+    <span class="header-count"><?= $total ?> Task<?= $total !== 1 ? 's' : '' ?></span>
 </header>
 
-<!-- ============================================================
-     MAIN CONTENT
-============================================================ -->
 <main class="container">
 
-    <!-- Flash Messages -->
     <?php if ($success): ?>
-        <div class="alert alert-success" role="alert">
-            <span class="alert-icon">✅</span>
-            <?= htmlspecialchars($success) ?>
-            <button class="alert-close" aria-label="Close">✕</button>
+        <div class="alert alert-ok">
+            ✅ <?= htmlspecialchars($success) ?>
+            <button class="alert-close">✕</button>
         </div>
     <?php endif; ?>
 
     <?php foreach ($errors as $error): ?>
-        <div class="alert alert-error" role="alert">
-            <span class="alert-icon">⚠️</span>
-            <?= htmlspecialchars($error) ?>
-            <button class="alert-close" aria-label="Close">✕</button>
+        <div class="alert alert-err">
+            ⚠️ <?= htmlspecialchars($error) ?>
+            <button class="alert-close">✕</button>
         </div>
     <?php endforeach; ?>
 
-    <!-- Stats Bar -->
+    <!-- Stats -->
     <div class="stats-bar">
-        <div class="stat-card stat-total">
-            <div class="stat-value"><?= $totalTasks ?></div>
-            <div class="stat-label">Total Tasks</div>
+        <div class="stat-box total">
+            <div class="num"><?= $total ?></div>
+            <div class="lbl">Total</div>
         </div>
-        <div class="stat-card stat-pending">
-            <div class="stat-value"><?= $pendingTasks ?></div>
-            <div class="stat-label">Pending</div>
+        <div class="stat-box pending">
+            <div class="num"><?= $pending ?></div>
+            <div class="lbl">Pending</div>
         </div>
-        <div class="stat-card stat-done">
-            <div class="stat-value"><?= $completedTasks ?></div>
-            <div class="stat-label">Completed</div>
+        <div class="stat-box done">
+            <div class="num"><?= $completed ?></div>
+            <div class="lbl">Completed</div>
         </div>
     </div>
 
-    <!-- Two-column Grid: Form | Task List -->
-    <div class="grid-2">
+    <div class="grid">
 
-        <!-- ================================================
-             LEFT — ADD TASK FORM
-        ================================================ -->
-        <section class="card" aria-labelledby="formHeading">
-            <div class="card-header">
-                <h2 id="formHeading">➕ Add New Task</h2>
+        <!-- Add Task Form -->
+        <section class="card">
+            <div class="card-head">
+                <h2>➕ Add New Task</h2>
             </div>
             <div class="card-body">
                 <form id="taskForm" action="actions/add-task.php" method="POST" novalidate>
 
-                    <!-- Title -->
                     <div class="form-group">
-                        <label for="title">Task Title <span style="color:var(--danger)">*</span></label>
-                        <input
-                            type="text"
-                            id="title"
-                            name="title"
-                            class="form-control"
-                            placeholder="e.g. Design landing page"
-                            maxlength="255"
-                            autocomplete="off"
-                        >
-                        <span class="invalid-feedback" id="titleError"></span>
+                        <label for="title">Task Title *</label>
+                        <input type="text" id="title" name="title" class="form-control" placeholder="e.g. Fix login bug" maxlength="255" autocomplete="off">
+                        <span class="error-msg" id="titleError"></span>
                     </div>
 
-                    <!-- Description -->
                     <div class="form-group">
-                        <label for="description">Description <span style="color:var(--danger)">*</span></label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            class="form-control"
-                            placeholder="Briefly describe the task..."
-                            rows="4"
-                        ></textarea>
-                        <span class="invalid-feedback" id="descError"></span>
+                        <label for="description">Description *</label>
+                        <textarea id="description" name="description" class="form-control" placeholder="What needs to be done?" rows="4"></textarea>
+                        <span class="error-msg" id="descError"></span>
                     </div>
 
-                    <!-- Priority -->
                     <div class="form-group">
-                        <label for="priority">Priority <span style="color:var(--danger)">*</span></label>
+                        <label for="priority">Priority *</label>
                         <select id="priority" name="priority" class="form-control">
-                            <option value="">— Select Priority —</option>
-                            <option value="Low">🟢 Low</option>
-                            <option value="Medium">🟡 Medium</option>
-                            <option value="High">🔴 High</option>
+                            <option value="">-- Select --</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
                         </select>
-                        <span class="invalid-feedback" id="priorityError"></span>
+                        <span class="error-msg" id="priorityError"></span>
                     </div>
 
-                    <!-- Submit -->
-                    <button type="submit" id="submitBtn" class="btn btn-primary">
-                        ➕ Add Task
-                    </button>
+                    <button type="submit" id="submitBtn" class="btn btn-submit">Add Task</button>
 
                 </form>
             </div>
         </section>
 
-        <!-- ================================================
-             RIGHT — TASK LIST
-        ================================================ -->
-        <section class="card" aria-labelledby="listHeading">
-            <div class="card-header">
-                <h2 id="listHeading">📂 All Tasks</h2>
-                <span id="taskCount" style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">
-                    <?= $totalTasks ?> task<?= $totalTasks !== 1 ? 's' : '' ?>
-                </span>
+        <!-- Task List -->
+        <section class="card">
+            <div class="card-head">
+                <h2>📂 All Tasks</h2>
+                <span style="font-size:0.75rem; color:#9ca3af;"><?= $total ?> task<?= $total !== 1 ? 's' : '' ?></span>
             </div>
-            <div class="card-body" style="padding-bottom:0.5rem;">
-
-                <!-- Search Bar -->
-                <div class="form-group search-wrapper">
-                    <span class="search-icon">🔍</span>
-                    <input
-                        type="search"
-                        id="searchInput"
-                        class="form-control"
-                        placeholder="Search tasks by title..."
-                        autocomplete="off"
-                    >
+            <div class="card-body" style="padding-bottom: 8px;">
+                <div class="search-box">
+                    <span class="icon">🔍</span>
+                    <input type="search" id="searchInput" class="form-control" placeholder="Search by title..." autocomplete="off">
                 </div>
-
             </div>
 
             <?php if (empty($tasks)): ?>
-                <!-- Empty state -->
-                <div class="empty-state">
-                    <span class="empty-icon">📭</span>
-                    <p>No tasks yet!</p>
-                    <small>Use the form on the left to add your first task.</small>
+                <div class="empty">
+                    <span>📭</span>
+                    <p>No tasks yet. Add one!</p>
                 </div>
             <?php else: ?>
-                <div class="task-table-wrapper">
-                    <table class="task-table" role="table" aria-label="Task list">
+                <div style="overflow-x: auto;">
+                    <table class="task-table">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -195,84 +134,110 @@ $completedTasks = count(array_filter($tasks, fn($t) => $t['status'] === 'Complet
                         <tbody>
                         <?php foreach ($tasks as $i => $task): ?>
                             <tr class="task-row" data-title="<?= htmlspecialchars($task['title']) ?>">
-
-                                <td data-label="#">
-                                    <?= $i + 1 ?>
-                                </td>
-
+                                <td data-label="#"><?= $i + 1 ?></td>
                                 <td data-label="Task">
-                                    <div class="task-title"><?= htmlspecialchars($task['title']) ?></div>
+                                    <div class="task-name"><?= htmlspecialchars($task['title']) ?></div>
                                     <div class="task-desc"><?= htmlspecialchars($task['description']) ?></div>
                                 </td>
-
                                 <td data-label="Priority">
                                     <span class="badge <?= priorityBadge($task['priority']) ?>">
-                                        <span class="priority-dot <?= priorityDot($task['priority']) ?>"></span>
-                                        <?= htmlspecialchars($task['priority']) ?>
+                                        <?= $task['priority'] ?>
                                     </span>
                                 </td>
-
                                 <td data-label="Status">
                                     <span class="badge <?= statusBadge($task['status']) ?>">
-                                        <?= $task['status'] === 'Completed' ? '✓' : '○' ?>
-                                        <?= htmlspecialchars($task['status']) ?>
+                                        <?= $task['status'] ?>
                                     </span>
                                 </td>
-
-                                <td data-label="Date">
-                                    <?= date('M d, Y', strtotime($task['created_at'])) ?>
-                                </td>
-
+                                <td data-label="Date"><?= date('M d, Y', strtotime($task['created_at'])) ?></td>
                                 <td data-label="Actions">
-                                    <div class="actions-cell">
-                                        <!-- Toggle Status -->
+                                    <div class="actions">
+                                        <!-- Toggle status -->
                                         <form action="actions/update-task.php" method="POST" style="display:inline;">
                                             <input type="hidden" name="id" value="<?= (int)$task['id'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-success" title="Toggle status">
+                                            <button class="btn btn-green" type="submit">
                                                 <?= $task['status'] === 'Pending' ? '✓ Done' : '↺ Reopen' ?>
                                             </button>
                                         </form>
 
-                                        <!-- Delete Task -->
-                                        <form
-                                            action="actions/delete-task.php"
-                                            method="POST"
-                                            class="deleteForm"
-                                            data-title="<?= htmlspecialchars($task['title']) ?>"
-                                            style="display:inline;"
-                                        >
+                                        <!-- Edit task -->
+                                        <button class="btn btn-amber editBtn"
+                                            data-id="<?= (int)$task['id'] ?>"
+                                            data-title="<?= htmlspecialchars($task['title'], ENT_QUOTES) ?>"
+                                            data-description="<?= htmlspecialchars($task['description'], ENT_QUOTES) ?>"
+                                            data-priority="<?= $task['priority'] ?>">
+                                            ✏️ Edit
+                                        </button>
+
+                                        <!-- Delete task -->
+                                        <form action="actions/delete-task.php" method="POST" class="deleteForm"
+                                            data-title="<?= htmlspecialchars($task['title']) ?>" style="display:inline;">
                                             <input type="hidden" name="id" value="<?= (int)$task['id'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete task">
-                                                🗑 Delete
-                                            </button>
+                                            <button class="btn btn-red" type="submit">🗑 Delete</button>
                                         </form>
                                     </div>
                                 </td>
-
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Shown when search has no results -->
-                <div id="emptySearchMsg" class="empty-state" style="display:none;">
-                    <span class="empty-icon">🔍</span>
+                <div id="emptySearch" class="empty" style="display:none;">
+                    <span>🔍</span>
                     <p>No tasks match your search.</p>
-                    <small>Try a different keyword.</small>
                 </div>
             <?php endif; ?>
         </section>
 
-    </div><!-- /.grid-2 -->
+    </div>
 </main>
 
-<!-- ============================================================
-     FOOTER
-============================================================ -->
 <footer class="site-footer">
-    <p>Mini Task Management System &copy; <?= date('Y') ?> &mdash; Built with PHP &amp; Vanilla JS</p>
+    Mini Task Management System &copy; <?= date('Y') ?>
 </footer>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>✏️ Edit Task</h3>
+            <button class="modal-close" id="modalClose">✕</button>
+        </div>
+        <form action="actions/edit-task.php" method="POST" id="editForm">
+            <div class="modal-body">
+                <input type="hidden" name="id" id="editId">
+
+                <div class="form-group">
+                    <label for="editTitle">Task Title *</label>
+                    <input type="text" id="editTitle" name="title" class="form-control" maxlength="255">
+                    <span class="error-msg" id="editTitleError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescription">Description *</label>
+                    <textarea id="editDescription" name="description" class="form-control" rows="3"></textarea>
+                    <span class="error-msg" id="editDescError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="editPriority">Priority *</label>
+                    <select id="editPriority" name="priority" class="form-control">
+                        <option value="">-- Select --</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                    <span class="error-msg" id="editPriorityError"></span>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button type="button" class="btn btn-gray" id="modalCancel">Cancel</button>
+                <button type="submit" class="btn btn-submit" id="editSubmitBtn" style="width:auto;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script src="js/app.js"></script>
 </body>

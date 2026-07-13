@@ -32,9 +32,9 @@ function sanitize(string $data): string {
 // ──────────────────────────────────────────────────────────
 function priorityBadge(string $priority): string {
     return match ($priority) {
-        'High'   => 'badge-high',
-        'Medium' => 'badge-medium',
-        'Low'    => 'badge-low',
+        'High'   => 'b-high',
+        'Medium' => 'b-medium',
+        'Low'    => 'b-low',
         default  => ''
     };
 }
@@ -43,7 +43,7 @@ function priorityBadge(string $priority): string {
 // Return CSS badge class based on status
 // ──────────────────────────────────────────────────────────
 function statusBadge(string $status): string {
-    return $status === 'Completed' ? 'badge-completed' : 'badge-pending';
+    return $status === 'Completed' ? 'b-done' : 'b-pending';
 }
 
 // ──────────────────────────────────────────────────────────
